@@ -1,0 +1,6 @@
+module(
+    name = "bazel_rules_ghdl_integration",
+    version = "0.0.0",
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.7.1")

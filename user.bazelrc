@@ -1,0 +1,2 @@
+build --override_repository=gotopt2=/home/f/code/gotopt2
+build --override_repository=bazel_rules_bid=/home/f/code/bazel-rules-bid

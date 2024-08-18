@@ -1,0 +1,19 @@
+load("@bazel_rules_ghdl//:rules.bzl", "ghdl_library", "ghdl_verilog")
+
+ghdl_library(
+    name = "lib",
+    srcs = [ "hello.vhdl", ]
+)
+
+ghdl_verilog(
+    name = "verilog",
+    lib = ":lib",
+    unit = "my_module",
+)
+
+genrule(
+    name = "file",
+    srcs = [],
+    outs = ["file.txt"],
+    cmd = "echo hello > $@"
+)
