@@ -18,3 +18,8 @@ cd integration && bazel build //... && cat bazel-bin/verilog.v
 
 * The docker image in use is defined here:
   https://github.com/filmil/eda_tools/tree/main/ghdl
+
+## References
+
+* https://github.com/solsjo/rules_ghdl: an alternative rule set. Does not use
+  docker, but not hermetic.
