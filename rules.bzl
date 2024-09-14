@@ -144,6 +144,13 @@ def _ghdl_verilog(ctx):
     for source in ghdl.sources.to_list():
         inputs += [file for file in source.to_list()]
 
+    generics = []
+    for k, v in ctx.attr.generics.items():
+        generics += [ "-g{key}={value}".format(key=k,value=v)]
+    vendor = []
+    for s in ctx.attr.vendor:
+        vendor += [ "--vendor-library={lib}".format(lib=s) ]
+
     arch = ctx.attr.arch or ""
 
     script = _script_cmd(
@@ -164,6 +171,8 @@ def _ghdl_verilog(ctx):
           {cmd} \
           synth \
           {libargs} \
+          {generics} \
+          {vendor} \
           --workdir={workdir} \
           --work={library} \
           --out=verilog \
@@ -181,6 +190,8 @@ def _ghdl_verilog(ctx):
             arch=arch,
             output=output_file.path,
             std=ctx.attr.standard,
+            generics=" ".join(generics),
+            vendor=" ".join(vendor),
         ),
     )
 
@@ -195,16 +206,28 @@ ghdl_verilog = rule(
     attrs = {
         "arch": attr.string(
             default = "",
+            doc = "The architecture to use for the entity, if there are multiple available",
         ),
-        "unit": attr.string(),
+        "unit": attr.string(
+            doc = "The top level unit to elaborate."
+        ),
         "lib": attr.label(
             providers = [ GhdlProvider ],
         ),
         "deps": attr.label_list(
             providers = [ GhdlProvider ],
+            doc = "A list of GHDL libraries crated using ghdl_library",
         ),
         "standard": attr.string(
             default="08",
+            doc = "The VHDL language standard to use. Supported versions depend on the GHDL version used",
+        ),
+        "generics": attr.string_dict(
+            allow_empty = True,
+            doc = "A map of string to string, definint the top level unit generic parameters",
+        ),
+        "vendor": attr.string_list(
+            doc = "A list of libraries to be treated as vendor library black boxes",
         ),
         "_script": attr.label(
             default=Label("@bazel_rules_bid//build:docker_run"),
