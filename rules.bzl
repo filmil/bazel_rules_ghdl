@@ -12,6 +12,7 @@ GhdlProvider = provider(
         "library": "The resulting library file",
         "name": "The name of the library",
         "sources": "The source files of this library",
+        "deps": "The dependencies of this library",
     }
 )
 
@@ -40,16 +41,34 @@ def _ghdl_library(ctx):
     output_file = ctx.actions.declare_file("{}-obj{}.cf".format(name, std))
     output_dir = ctx.actions.declare_directory("{}.build".format(name))
     cache_dir = ctx.actions.declare_directory("{}.cache".format(name))
-    outputs = [output_file, output_dir, cache_dir]
+    #outputs = [output_file, output_dir, cache_dir]
+    outputs = [output_file]
+    aux_dirs = [output_dir, cache_dir]
 
     # sources
     inputs = []
 
     input_files = []
-    for t in ctx.attr.srcs:
-        i_depset = t.files
-        input_files += [f for f in i_depset.to_list()]
+    for src in ctx.attr.srcs:
+        input_files += [f for f in src.files.to_list()]
     inputs += input_files
+
+    libargs = []
+    dep_sources = []
+    lib_inputs = []
+    # process deps.
+    for dep in ctx.attr.deps:
+        ghdl = dep[GhdlProvider]
+        lib_depset = ghdl.library  # is a depset.
+        for lib in lib_depset.to_list():
+            libargs += ["-P{}".format(lib.dirname)]
+            inputs += [lib]
+            lib_inputs += [lib] # Redundant, but I'm not in the mood to refactor.
+        prov_sources = ghdl.sources
+        for file in prov_sources.to_list():
+            dep_sources += [file]
+        for file in ghdl.deps.to_list():
+            lib_inputs += [file]
 
     args = ctx.actions.args()
 
@@ -62,8 +81,8 @@ def _ghdl_library(ctx):
         progress_message = \
             "{cmd} Library {library}".format(
             cmd=cmd, library=name),
-        inputs = inputs,
-        outputs = outputs,
+        inputs = inputs + dep_sources + lib_inputs,
+        outputs = outputs + aux_dirs,
         tools = [docker_run],
         mnemonic = "GHDL",
         command = """\
@@ -74,6 +93,7 @@ def _ghdl_library(ctx):
           --work={library} \
           --std={std} \
           --warn-library \
+          {libargs} \
           {files}
         """.format(
             script=script,
@@ -81,6 +101,7 @@ def _ghdl_library(ctx):
             library=name,
             std=std,
             workdir=output_file.dirname,
+            libargs=" ".join(libargs),
             files=" ".join([f.path for f in input_files])
         ),
     )
@@ -89,11 +110,12 @@ def _ghdl_library(ctx):
         GhdlProvider(
             library=depset(outputs),
             name=name,
-            sources=depset(input_files),
+            sources=depset(input_files, transitive=[depset(dep_sources)]),
+            deps=depset(lib_inputs),
         ),
         DefaultInfo(
-            files=depset(outputs),
-            runfiles=ctx.runfiles(files=outputs),
+            files=depset(outputs+dep_sources+input_files),
+            runfiles=ctx.runfiles(files=outputs+dep_sources+input_files),
         ),
     ]
 
@@ -102,6 +124,9 @@ ghdl_library = rule(
     attrs = {
         "srcs": attr.label_list(
             allow_files = [".vhd", ".vhdl"],
+        ),
+        "deps": attr.label_list(
+            providers = [GhdlProvider],
         ),
         "standard": attr.string(
             default="08",
@@ -125,14 +150,17 @@ def _ghdl_verilog(ctx):
 
     libargs = []
     inputs = []
+    libraries = []
     # process deps.
     for dep in ctx.attr.deps:
         ghdl = dep[GhdlProvider]
         name = ghdl.name
-        lib = ghdl.library
-        libargs += ["-P{}".format(lib.dirname)]
-        for file in dep.files.to_list():
-            inputs += [file]
+        lib_depset = ghdl.library  # is a depset.
+        for lib in lib_depset.to_list():
+            libargs += ["-P{}".format(lib.dirname)]
+            libraries += [lib]
+            for file in dep.files.to_list():
+                inputs += [file]
 
     lib = ctx.attr.lib
     ghdl = lib[GhdlProvider]
@@ -141,6 +169,11 @@ def _ghdl_verilog(ctx):
     inputs += lib.files.to_list()
     for source in ghdl.sources.to_list():
         inputs += [source]
+    for file in ghdl.deps.to_list():
+        libargs += ["-P{}".format(file.dirname)]
+        inputs += [file]
+
+    print("inputs:", inputs)
 
     generics = []
     for k, v in ctx.attr.generics.items():
@@ -156,11 +189,12 @@ def _ghdl_verilog(ctx):
         output_dir.path,
         cache_dir.path,
     )
+
     ctx.actions.run_shell(
         progress_message = \
             "{cmd} Library {library}".format(
             cmd=cmd, library=name),
-        inputs = inputs,
+        inputs = inputs + libraries,
         outputs = outputs,
         tools = [docker_run],
         mnemonic = "GHDLSYNTH",
