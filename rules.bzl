@@ -1,7 +1,6 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_rules_bid//build:rules.bzl", "run_docker_cmd")
 
-
 CONTAINER = "filipfilmar/ghdl:0.5"
 
 CMD = "ghdl"
@@ -10,16 +9,16 @@ CMD = "ghdl"
 GhdlProvider = provider(
     doc = "A provider of GHDL library",
     fields = {
-        "library": "The resulting library file",        
+        "library": "The resulting library file",
         "name": "The name of the library",
         "sources": "The source files of this library",
     }
 )
 
 def _script_cmd(
-    script_path, 
-    dir_reference, 
-    cache_dir, 
+    script_path,
+    dir_reference,
+    cache_dir,
     source_dir="", mounts=None, envs=None, tools=None):
     return run_docker_cmd(
         CONTAINER,
@@ -44,21 +43,20 @@ def _ghdl_library(ctx):
     outputs = [output_file, output_dir, cache_dir]
 
     # sources
-    input_depsets = []
     inputs = []
 
     input_files = []
     for t in ctx.attr.srcs:
-        input_depsets = t.files
-        input_files += [f for f in t.files.to_list()]
+        i_depset = t.files
+        input_files += [f for f in i_depset.to_list()]
     inputs += input_files
 
     args = ctx.actions.args()
 
     script = _script_cmd(
-        docker_run.path, 
-        output_dir.path, 
-        cache_dir.path, 
+        docker_run.path,
+        output_dir.path,
+        cache_dir.path,
     )
     ctx.actions.run_shell(
         progress_message = \
@@ -91,7 +89,7 @@ def _ghdl_library(ctx):
         GhdlProvider(
             library=depset(outputs),
             name=name,
-            sources=depset(direct=[input_depsets]),
+            sources=depset(input_files),
         ),
         DefaultInfo(
             files=depset(outputs),
@@ -142,7 +140,7 @@ def _ghdl_verilog(ctx):
     libargs += ["-P{}".format(lib.files.to_list()[0].dirname)]
     inputs += lib.files.to_list()
     for source in ghdl.sources.to_list():
-        inputs += [file for file in source.to_list()]
+        inputs += [source]
 
     generics = []
     for k, v in ctx.attr.generics.items():
@@ -154,9 +152,9 @@ def _ghdl_verilog(ctx):
     arch = ctx.attr.arch or ""
 
     script = _script_cmd(
-        docker_run.path, 
-        output_dir.path, 
-        cache_dir.path, 
+        docker_run.path,
+        output_dir.path,
+        cache_dir.path,
     )
     ctx.actions.run_shell(
         progress_message = \
