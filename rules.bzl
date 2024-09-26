@@ -35,12 +35,17 @@ def _script_cmd(
 def _ghdl_library(ctx):
     cmd = CMD
     name = ctx.label.name
+    library_name = name
+
+    # If the user has overridden the library name, apply that name.
+    if ctx.attr.library_name:
+        library_name = ctx.attr.library_name
     docker_run = ctx.executable._script
     std = ctx.attr.standard
 
-    output_file = ctx.actions.declare_file("{}-obj{}.cf".format(name, std))
-    output_dir = ctx.actions.declare_directory("{}.build".format(name))
-    cache_dir = ctx.actions.declare_directory("{}.cache".format(name))
+    output_file = ctx.actions.declare_file("{}-obj{}.cf".format(library_name, std))
+    output_dir = ctx.actions.declare_directory("{}.{}.build".format(library_name, name))
+    cache_dir = ctx.actions.declare_directory("{}.{}.cache".format(library_name, name))
     #outputs = [output_file, output_dir, cache_dir]
     outputs = [output_file]
     aux_dirs = [output_dir, cache_dir]
@@ -80,7 +85,7 @@ def _ghdl_library(ctx):
     ctx.actions.run_shell(
         progress_message = \
             "{cmd} Library {library}".format(
-            cmd=cmd, library=name),
+            cmd=cmd, library=library_name),
         inputs = inputs + dep_sources + lib_inputs,
         outputs = outputs + aux_dirs,
         tools = [docker_run],
@@ -98,7 +103,7 @@ def _ghdl_library(ctx):
         """.format(
             script=script,
             cmd=cmd,
-            library=name,
+            library=library_name,
             std=std,
             workdir=output_file.dirname,
             libargs=" ".join(libargs),
@@ -130,6 +135,13 @@ ghdl_library = rule(
         ),
         "standard": attr.string(
             default="08",
+        ),
+        "library_name": attr.string(
+            doc = """Override the library name from target name if needed.
+                     This is useful when there already is a target name that
+                     is the same as the library name this rule would
+                     have produced.
+                  """,
         ),
         "_script": attr.label(
             default=Label("@bazel_rules_bid//build:docker_run"),
@@ -172,8 +184,6 @@ def _ghdl_verilog(ctx):
     for file in ghdl.deps.to_list():
         libargs += ["-P{}".format(file.dirname)]
         inputs += [file]
-
-    print("inputs:", inputs)
 
     generics = []
     for k, v in ctx.attr.generics.items():
