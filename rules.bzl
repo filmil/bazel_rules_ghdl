@@ -13,6 +13,7 @@ GhdlProvider = provider(
         "name": "The name of the library",
         "sources": "The source files of this library",
         "deps": "The dependencies of this library",
+        "cf_file": "The 'cf' file that GHDL provides",
     }
 )
 
@@ -43,7 +44,7 @@ def _ghdl_library(ctx):
     docker_run = ctx.executable._script
     std = ctx.attr.standard
 
-    output_file = ctx.actions.declare_file("{}-obj{}.cf".format(library_name, std))
+    output_file = ctx.actions.declare_file("{}/{}-obj{}.cf".format(name, library_name, std))
     output_dir = ctx.actions.declare_directory("{}.{}.build".format(library_name, name))
     cache_dir = ctx.actions.declare_directory("{}.{}.cache".format(library_name, name))
     #outputs = [output_file, output_dir, cache_dir]
@@ -76,7 +77,6 @@ def _ghdl_library(ctx):
             lib_inputs += [file]
 
     args = ctx.actions.args()
-
     script = _script_cmd(
         docker_run.path,
         output_dir.path,
@@ -114,9 +114,10 @@ def _ghdl_library(ctx):
     return [
         GhdlProvider(
             library=depset(outputs),
-            name=name,
+            name=library_name,
             sources=depset(input_files, transitive=[depset(dep_sources)]),
             deps=depset(lib_inputs),
+            cf_file=output_file,
         ),
         DefaultInfo(
             files=depset(outputs+dep_sources+input_files),
@@ -132,6 +133,9 @@ ghdl_library = rule(
         ),
         "deps": attr.label_list(
             providers = [GhdlProvider],
+        ),
+        "vendor": attr.string_list(
+            doc = "A list of libraries to be treated as vendor library black boxes",
         ),
         "standard": attr.string(
             default="08",
@@ -154,8 +158,12 @@ def _ghdl_verilog(ctx):
     cmd = CMD
     name = ctx.label.name
     docker_run = ctx.executable._script
+    lib = ctx.attr.lib
+    ghdl = lib[GhdlProvider]
+    lib_name = ghdl.name
+    cf_file = ghdl.cf_file
 
-    output_file = ctx.actions.declare_file("{}.v".format(name))
+    output_file = ctx.actions.declare_file("{}/{}.v".format(name, lib_name))
     output_dir = ctx.actions.declare_directory("{}.build".format(name))
     cache_dir = ctx.actions.declare_directory("{}.cache".format(name))
     outputs = [output_file, output_dir, cache_dir]
@@ -174,23 +182,20 @@ def _ghdl_verilog(ctx):
             for file in dep.files.to_list():
                 inputs += [file]
 
-    lib = ctx.attr.lib
-    ghdl = lib[GhdlProvider]
-    lib_name = ghdl.name
     libargs += ["-P{}".format(lib.files.to_list()[0].dirname)]
     inputs += lib.files.to_list()
-    for source in ghdl.sources.to_list():
-        inputs += [source]
+
+    inputs += [source for source in ghdl.sources.to_list()]
+    #for source in ghdl.sources.to_list():
+        #inputs += [source]
     for file in ghdl.deps.to_list():
         libargs += ["-P{}".format(file.dirname)]
         inputs += [file]
 
-    generics = []
-    for k, v in ctx.attr.generics.items():
-        generics += [ "-g{key}={value}".format(key=k,value=v)]
-    vendor = []
-    for s in ctx.attr.vendor:
-        vendor += [ "--vendor-library={lib}".format(lib=s) ]
+    generics = [
+        "-g{key}={value}".format(key=k,value=v)
+            for (k, v) in ctx.attr.generics.items()]
+    vendor = [ "--vendor-library={}".format(s) for s in ctx.attr.vendor]
 
     arch = ctx.attr.arch or ""
 
@@ -226,7 +231,7 @@ def _ghdl_verilog(ctx):
             script=script,
             cmd=cmd,
             library=lib_name,
-            workdir=output_file.dirname,
+            workdir=cf_file.dirname,
             libargs=" ".join(libargs),
             unit=ctx.attr.unit,
             arch=arch,
