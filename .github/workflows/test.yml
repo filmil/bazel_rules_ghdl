@@ -23,5 +23,5 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-        run: "cd integration && bazel build //... && cat bazel-bin/verilog/lib.v"
+        run: "cd integration && bazel build //... --sandbox_debug --subcommands && cat bazel-bin/verilog/lib.v"
 
