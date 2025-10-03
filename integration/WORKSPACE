@@ -42,22 +42,22 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 # The first declaration of an external repository "wins".
 ############################################################
 
-go_rules_dependencies()
-go_register_toolchains(version = "1.20.5")
-gazelle_dependencies()
+#go_rules_dependencies()
+#go_register_toolchains(version = "1.20.5")
+#gazelle_dependencies()
 
-git_repository(
-    name = "gotopt2",
-    remote = "https://github.com/filmil/gotopt2",
-    commit = "d9022a955f016409886e86b55c59df8b26c33a41",
-)
-load("@gotopt2//build:deps.bzl", "gotopt2_dependencies")
-gotopt2_dependencies()
+#git_repository(
+    #name = "gotopt2",
+    #remote = "https://github.com/filmil/gotopt2",
+    #commit = "d9022a955f016409886e86b55c59df8b26c33a41",
+#)
+#load("@gotopt2//build:deps.bzl", "gotopt2_dependencies")
+#gotopt2_dependencies()
 
-git_repository(
-    name = "bazel_rules_bid",
-    remote = "https://github.com/filmil/bazel-rules-bid",
-    commit = "edad8e05fedb707792ac7e04f142c9adfe3baf52",
-)
+#git_repository(
+    #name = "bazel_rules_bid",
+    #remote = "https://github.com/filmil/bazel-rules-bid",
+    #commit = "edad8e05fedb707792ac7e04f142c9adfe3baf52",
+#)
 
-local_repository(name = "bazel_rules_ghdl", path = "../")
+#local_repository(name = "bazel_rules_ghdl", path = "../")

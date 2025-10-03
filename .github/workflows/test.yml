@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: "43 7 * * 0"
+    - cron: "43 8 * * 0"
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
@@ -15,9 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup bazel
-        uses: abhinavsingh/setup-bazel@v3
+        uses: bazel-contrib/setup-bazel@0.15.0
         with:
-          version: 7.2.0
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
