@@ -1,4 +1,9 @@
-# Bazel rules for ghdl [![Test status](https://github.com/filmil/bazel_rules_ghdl/workflows/Test/badge.svg)](https://github.com/filmil/bazel_rules_ghdl/workflows/Test/badge.svg)
+# Bazel rules for ghdl
+
+[![Test status](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/test.yml/badge.svg)](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/test.yml)
+[![Publish BCR status](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/publish-bcr.yml/badge.svg)](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/publish-bcr.yml)
+[![Publish status](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/publish.yml/badge.svg)](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/publish.yml)
+[![Tag and Release status](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/tag-and-release.yml/badge.svg)](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/tag-and-release.yml)
 
 This repository contains a [`bazel`][bb] rule set for running [`ghdl`][gg], the
 VHDL simulator and synthesizer, specifically to convert VHDL designs into
