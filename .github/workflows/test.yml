@@ -17,9 +17,9 @@ jobs:
       - name: Setup bazel
         uses: bazel-contrib/setup-bazel@0.15.0
         with:
-          bazelisk-cache: true
+          bazelisk-cache: false
           disk-cache: ${{ github.workflow }}
-          repository-cache: true
+          repository-cache: false
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
