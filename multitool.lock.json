@@ -1,0 +1,27 @@
+{
+    "$schema": "https://raw.githubusercontent.com/theoremlp/rules_multitool/main/lockfile.schema.json",
+    "gotopt2": {
+        "binaries": [
+            {
+                "kind": "archive",
+                "url": "https://github.com/filmil/gotopt2/releases/download/v2.1.4/gotopt2-linux-amd64.zip",
+                "sha256": "a8542382a8787e71deb75524577f1b13177ae18939f36881522f4eac2949189a",
+                "os": "linux",
+                "file": "gotopt2/gotopt2",
+                "cpu": "x86_64"
+            }
+        ]
+    },
+    "xrootfs": {
+        "binaries": [
+            {
+                "kind": "archive",
+                "url": "https://github.com/filmil/xrootfs/releases/download/v0.0.8/xrootfs-linux-amd64.zip",
+                "sha256": "",
+                "os": "linux",
+                "file": "xrootfs/xrootfs",
+                "cpu": "x86_64"
+            }
+        ]
+    }
+}

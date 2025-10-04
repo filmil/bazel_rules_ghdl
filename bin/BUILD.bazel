@@ -1,0 +1,28 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sh_binary(
+    name = "ghdl",
+    srcs = [ "ghdl.sh" ],
+    data = [
+        "@multitool//tools/gotopt2",
+        ":ghdl_wrapper",
+    ],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
+
+sh_binary(
+    name = "ghdl_wrapper",
+    srcs = [ "ghdl_wrapper.sh" ],
+    args = [
+        "--rootfs-dir=$(location //image:rootfs)",
+    ],
+    data = [
+        "@multitool//tools/gotopt2",
+        "//image:rootfs",
+    ],
+    deps = [
+        "@bazel_tools//tools/bash/runfiles",
+    ],
+)

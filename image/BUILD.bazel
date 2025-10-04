@@ -1,0 +1,31 @@
+# LICENSE sha256: c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load(":rules.bzl", "rootfs")
+
+
+oci_image(
+    name = "image",
+    architecture = "amd64",
+    os = "linux",
+    tars = [
+        "@bullseye//:flat",
+    ],
+)
+
+oci_load(
+    name = "load",
+    image = ":image",
+    repo_tags = ["blah"],
+)
+
+filegroup(
+    name = "image.tar",
+    srcs = [":load"],
+    output_group = "tarball",
+)
+
+rootfs(
+    name = "rootfs",
+    src = ":image.tar",
+    visibility = [ "//bin:__subpackages__"],
+)
