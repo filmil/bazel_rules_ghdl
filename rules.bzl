@@ -87,6 +87,11 @@ def _ghdl_library(ctx):
             libargs=" ".join(libargs),
             files=" ".join([f.path for f in input_files])
         ),
+        # TODO(filmil): Figure out how to remove this.
+        execution_requirements = {
+            "no-sandbox": "1",
+            "no-remote": "1",
+        },
     )
 
     return [
@@ -205,6 +210,11 @@ def _ghdl_verilog(ctx):
             generics=" ".join(generics),
             vendor=" ".join(vendor),
         ),
+        # TODO(filmil): Figure out how to remove this.
+        execution_requirements = {
+            "no-sandbox": "1",
+            "no-remote": "1",
+        },
     )
 
     return [
