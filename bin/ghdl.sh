@@ -17,9 +17,12 @@ _rootfs_dir="$(rlocation bazel_rules_ghdl~/${_rootfs} || rlocation _main/${_root
 echo rootfs_dir: "${_rootfs_dir}"
 
 readonly _ld_preload_path="${_rootfs_dir}/lib/x86_64-linux-gnu:${_rootfs_dir}/usr/lib/x86_64-linux-gnu"
-readonly _path="${_rootfs_dir}/bin:${_rootfs_dir}/usr/bin"
+readonly _path="${_rootfs_dir}/bin:${_rootfs_dir}/usr/bin:${_rootfs_dir}/usr/lib/ghdl/gcc"
 readonly _ld_so="${_rootfs_dir}/lib64/ld-linux-x86-64.so.2"
 
-export LD_LIBRARY_PATH="${_ld_preload_path}" PATH="${_path}"
-"${_ld_so}" "${_rootfs_dir}/usr/bin/ghdl-llvm" "${@}"
+export LD_LIBRARY_PATH="${_ld_preload_path}"
+export PATH="${_path}"
+#export GHDL_PREFIX="${_rootfs_dir}/usr/lib/ghdl/gcc"
+
+"${_ld_so}" "${_rootfs_dir}/usr/bin/ghdl-mcode" "${@}"
 

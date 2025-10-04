@@ -2,7 +2,7 @@ version: 1
 
 # Needs a newer snapshot.
 sources:
-  - channel: bullseye main
+  - channel: trixie main
     url: https://snapshot-cloudflare.debian.org/archive/debian/20251001T023456Z
 
 archs:
@@ -14,7 +14,10 @@ packages:
   - dash
   - gcc
   - ghdl
+  - ghdl-mcode
+  - ghdl-gcc
   - ghdl-llvm
+  - ghdl-common
   - gnat
   - libc6
   - perl
