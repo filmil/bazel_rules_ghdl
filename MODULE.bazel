@@ -22,7 +22,7 @@ use_repo(multitool, "multitool")
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
 apt.install(
     name = "bullseye",
-    #lock = "//image:bullseye.lock.json",
+    lock = "//image:bullseye.lock.json",
     manifest = "//image:bullseye.yaml",
 )
 use_repo(apt, "bullseye")
