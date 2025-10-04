@@ -9,10 +9,12 @@ archs:
   - amd64
 
 packages:
-  - perl
+  - bash
+  - cpio
+  - dash
   - ghdl
   - ghdl-llvm
-  - bash
-  - dash
-  - libc6
   - gnat
+  - libc6
+  - perl
+  - tar
