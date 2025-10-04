@@ -2,7 +2,7 @@
 
 # --- begin runfiles.bash initialization v3 ---
 # Copy-pasted from the Bazel Bash runfiles library v3.
-set -uo pipefail; set +e; f=bazel_tools/tools/bash/runfiles/runfiles.bash
+set -uo pipefail; f=bazel_tools/tools/bash/runfiles/runfiles.bash
 # shellcheck disable=SC1090
 source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
   source "$(grep -sm1 "^$f " "${RUNFILES_MANIFEST_FILE:-/dev/null}" | cut -f2- -d' ')" 2>/dev/null || \
@@ -12,14 +12,8 @@ source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
   { echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
 # --- end runfiles.bash initialization v3 ---
 
-readonly _rootfs="image/rootfs"
-# Any better ideas here?
-for repo in bazel_rules_ghdl+ bazel_rules_ghdl~ _main; do
-  _rootfs_dir="$(rlocation ${repo}/${_rootfs})"
-  if [[ "${_rootfs_dir}" != "" ]]; then
-    break
-  fi
-done
+# For some reason rlocation gives up if it doesn't find the repo.
+_rootfs_dir="$(rlocation ${TEST_WORKSPACE:-bazel_rules_ghdl+}/image/rootfs)"
 if [[ ${_rootfs_dir} == "" ]]; then
   echo "could not find rootfs: ${_rootfs_dir}"
   exit 1
@@ -31,7 +25,6 @@ readonly _ld_so="${_rootfs_dir}/lib64/ld-linux-x86-64.so.2"
 
 export LD_LIBRARY_PATH="${_ld_preload_path}"
 export PATH="${_path}"
-#export GHDL_PREFIX="${_rootfs_dir}/usr/lib/ghdl/gcc"
 
 "${_ld_so}" "${_rootfs_dir}/usr/bin/ghdl-mcode" "${@}"
 

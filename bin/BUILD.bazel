@@ -7,9 +7,9 @@ sh_binary(
     name = "ghdl",
     srcs = [ "ghdl.sh" ],
     data = [
-        "@multitool//tools/gotopt2",
         "//image:rootfs",
         "@rules_shell//shell/runfiles",
+        "@bazel_tools//tools/bash/runfiles",
     ],
 )
 
@@ -18,5 +18,7 @@ sh_test(
     srcs = ["ghdl_test.sh",],
     data = [
         ":ghdl",
+        "@rules_shell//shell/runfiles",
+        "@bazel_tools//tools/bash/runfiles",
     ],
 )
