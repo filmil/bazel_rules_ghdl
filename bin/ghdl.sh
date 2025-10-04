@@ -13,8 +13,17 @@ source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
 # --- end runfiles.bash initialization v3 ---
 
 readonly _rootfs="image/rootfs"
-_rootfs_dir="$(rlocation bazel_rules_ghdl~/${_rootfs} || rlocation _main/${_rootfs})"
-echo rootfs_dir: "${_rootfs_dir}"
+# Any better ideas here?
+for repo in bazel_rules_ghdl+ bazel_rules_ghdl~ _main; do
+  _rootfs_dir="$(rlocation ${repo}/${_rootfs})"
+  if [[ "${_rootfs_dir}" != "" ]]; then
+    break
+  fi
+done
+if [[ ${_rootfs_dir} == "" ]]; then
+  echo "could not find rootfs: ${_rootfs_dir}"
+  exit 1
+fi
 
 readonly _ld_preload_path="${_rootfs_dir}/lib/x86_64-linux-gnu:${_rootfs_dir}/usr/lib/x86_64-linux-gnu"
 readonly _path="${_rootfs_dir}/bin:${_rootfs_dir}/usr/bin:${_rootfs_dir}/usr/lib/ghdl/gcc"
