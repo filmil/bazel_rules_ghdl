@@ -1,0 +1,18 @@
+version: 1
+
+# Needs a newer snapshot.
+sources:
+  - channel: bullseye main
+    url: https://snapshot-cloudflare.debian.org/archive/debian/20251001T023456Z
+
+archs:
+  - amd64
+
+packages:
+  - perl
+  - ghdl
+  - ghdl-llvm
+  - bash
+  - dash
+  - libc6
+  - gnat

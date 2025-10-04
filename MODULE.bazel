@@ -3,7 +3,27 @@ module(
     version = "0.0.0",
 )
 
+bazel_dep(name = "rules_distroless", version = "0.5.3")
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
 bazel_dep(name = "gotopt2", version = "2.2.2")
 bazel_dep(name = "bazel_rules_bid", version = "0.3.0")
+bazel_dep(name = "rules_shell", version = "0.6.1")
+bazel_dep(name = "rules_oci", version = "2.2.6")
+
+
+# multitool
+bazel_dep(name = "rules_multitool", version = "1.9.0")
+multitool = use_extension("@rules_multitool//multitool:extension.bzl", "multitool")
+multitool.hub(lockfile = "//:multitool.lock.json")
+use_repo(multitool, "multitool")
+
+
+# apt
+apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+apt.install(
+    name = "bullseye",
+    #lock = "//image:bullseye.lock.json",
+    manifest = "//image:bullseye.yaml",
+)
+use_repo(apt, "bullseye")
 
