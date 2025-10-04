@@ -22,9 +22,6 @@ of tools.
 * `bazel` installation via [`bazelisk`][aa]. I recommend downloading `bazelisk`
   and placing it somewhere in your `$PATH` under the name `bazel`.
 
-* `docker`: the build uses a [build-in-docker][dd] approach to avoid installing
-  complex dependencies.  See Notes section below as well.
-
 Everything else will be downloaded for use the first time you run the build.
 
 [aa]: https://hdlfactory.com/note/2024/08/24/bazel-installation-via-the-bazelisk-method/
@@ -50,25 +47,12 @@ cd integration && bazel build //:lib
 
 ## Notes
 
-* Uses https://github.com/filmil/bazel-rules-bid. This means it will download
-  and try to use a Docker image with `ghdl` installed in it. If you are
-  unwilling or unable to run docker images in your builds, you may not be able
-  to use it.
-
-  While using docker complicates the build deployment somewhat, it is a fairly
-  straightforward way to work around the complexity that is building a
-  `bazel`-compatible distribution of `ghdl`. I thought this was a reasonable
-  tradeoff.
-
-* The docker image in use is defined here:
-  https://github.com/filmil/eda_tools/tree/main/ghdl
-
-* Only Linux host and target are supported.
+* Only Linux host and target are supported for now, although it should be
+  straightforward (but not necessarily trivial) to add support for other archs.
 
 ## References
 
-* https://github.com/solsjo/rules_ghdl: an alternative rule set. Does not use
-  docker, but is not hermetic.
+* https://github.com/solsjo/rules_ghdl: an alternative rule set, which is not
+  hermetic.
 
-[dd]: https://github.com/filmil/bazel-rules-bid
 

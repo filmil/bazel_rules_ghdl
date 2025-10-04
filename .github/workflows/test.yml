@@ -23,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Test
-        run: "bazel test //..."
+        run: "bazel test //... --test_summary=terse --test_output=errors"
       - name: Build
         run: "cd integration && bazel build //... && cat bazel-bin/verilog/lib.v"
 
