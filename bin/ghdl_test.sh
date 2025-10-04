@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+set -euo pipefail
+
+
 # --- begin runfiles.bash initialization v3 ---
 # Copy-pasted from the Bazel Bash runfiles library v3.
 set -uo pipefail; set +e; f=bazel_tools/tools/bash/runfiles/runfiles.bash
@@ -12,14 +15,8 @@ source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
   { echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
 # --- end runfiles.bash initialization v3 ---
 
-readonly _rootfs="image/rootfs"
-_rootfs_dir="$(rlocation bazel_rules_ghdl~/${_rootfs} || rlocation _main/${_rootfs})"
-echo rootfs_dir: "${_rootfs_dir}"
+readonly _ghdl_path="_main/bin/ghdl"
+readonly _ghdl="$(rlocation "_main/bin/ghdl")"
 
-readonly _ld_preload_path="${_rootfs_dir}/lib/x86_64-linux-gnu:${_rootfs_dir}/usr/lib/x86_64-linux-gnu"
-readonly _path="${_rootfs_dir}/bin:${_rootfs_dir}/usr/bin"
-readonly _ld_so="${_rootfs_dir}/lib64/ld-linux-x86-64.so.2"
-
-export LD_LIBRARY_PATH="${_ld_preload_path}" PATH="${_path}"
-"${_ld_so}" "${_rootfs_dir}/usr/bin/ghdl-llvm" "${@}"
+"${_ghdl}" --help
 

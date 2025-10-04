@@ -12,9 +12,11 @@ packages:
   - bash
   - cpio
   - dash
+  - gcc
   - ghdl
   - ghdl-llvm
   - gnat
   - libc6
   - perl
+  - strace
   - tar
