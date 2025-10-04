@@ -1,10 +1,11 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
-load("@bazel_rules_bid//build:rules.bzl", "run_docker_cmd")
 
-CONTAINER = "filipfilmar/ghdl:0.5"
-
-CMD = "ghdl"
-
+_COMMON_ATTRS = {
+    "_ghdl": attr.label(
+        default=Label("//bin:ghdl"),
+        executable=True,
+        cfg="host"),
+}
 
 GhdlProvider = provider(
     doc = "A provider of GHDL library",
@@ -17,31 +18,15 @@ GhdlProvider = provider(
     }
 )
 
-def _script_cmd(
-    script_path,
-    dir_reference,
-    cache_dir,
-    source_dir="", mounts=None, envs=None, tools=None):
-    return run_docker_cmd(
-        CONTAINER,
-        script_path,
-        dir_reference,
-        scratch_dir="{}:/.cache".format(cache_dir),
-        source_dir=source_dir,
-        mounts=mounts,
-        envs=envs,
-        tools=tools,
-    )
 
 def _ghdl_library(ctx):
-    cmd = CMD
+    _ghdl = ctx.executable._ghdl
     name = ctx.label.name
     library_name = name
 
     # If the user has overridden the library name, apply that name.
     if ctx.attr.library_name:
         library_name = ctx.attr.library_name
-    docker_run = ctx.executable._script
     std = ctx.attr.standard
 
     output_file = ctx.actions.declare_file("{}/{}-obj{}.cf".format(name, library_name, std))
@@ -77,21 +62,15 @@ def _ghdl_library(ctx):
             lib_inputs += [file]
 
     args = ctx.actions.args()
-    script = _script_cmd(
-        docker_run.path,
-        output_dir.path,
-        cache_dir.path,
-    )
     ctx.actions.run_shell(
         progress_message = \
             "{cmd} Library {library}".format(
-            cmd=cmd, library=library_name),
+            cmd=_ghdl, library=library_name),
         inputs = inputs + dep_sources + lib_inputs,
         outputs = outputs + aux_dirs,
-        tools = [docker_run],
+        tools = [_ghdl],
         mnemonic = "GHDL",
         command = """\
-        {script} \
           {cmd} \
           -a \
           --workdir={workdir} \
@@ -101,8 +80,7 @@ def _ghdl_library(ctx):
           {libargs} \
           {files}
         """.format(
-            script=script,
-            cmd=cmd,
+            cmd=_ghdl.path,
             library=library_name,
             std=std,
             workdir=output_file.dirname,
@@ -127,7 +105,7 @@ def _ghdl_library(ctx):
 
 ghdl_library = rule(
     implementation = _ghdl_library,
-    attrs = {
+    attrs = _COMMON_ATTRS | {
         "srcs": attr.label_list(
             allow_files = [".vhd", ".vhdl"],
         ),
@@ -147,17 +125,12 @@ ghdl_library = rule(
                      have produced.
                   """,
         ),
-        "_script": attr.label(
-            default=Label("@bazel_rules_bid//build:docker_run"),
-            executable=True,
-            cfg="host"),
     },
 )
 
 def _ghdl_verilog(ctx):
-    cmd = CMD
+    _ghdl = ctx.executable._ghdl
     name = ctx.label.name
-    docker_run = ctx.executable._script
     lib = ctx.attr.lib
     ghdl = lib[GhdlProvider]
     lib_name = ghdl.name
@@ -199,22 +172,15 @@ def _ghdl_verilog(ctx):
 
     arch = ctx.attr.arch or ""
 
-    script = _script_cmd(
-        docker_run.path,
-        output_dir.path,
-        cache_dir.path,
-    )
-
     ctx.actions.run_shell(
         progress_message = \
             "{cmd} Library {library}".format(
-            cmd=cmd, library=name),
+            cmd=_ghdl, library=name),
         inputs = inputs + libraries,
         outputs = outputs,
-        tools = [docker_run],
+        tools = [_ghdl],
         mnemonic = "GHDLSYNTH",
         command = """\
-        {script} \
           {cmd} \
           synth \
           {libargs} \
@@ -228,8 +194,7 @@ def _ghdl_verilog(ctx):
           {arch}  \
           > {output}
         """.format(
-            script=script,
-            cmd=cmd,
+            cmd=_ghdl.path,
             library=lib_name,
             workdir=cf_file.dirname,
             libargs=" ".join(libargs),
@@ -250,7 +215,7 @@ def _ghdl_verilog(ctx):
 
 ghdl_verilog = rule(
     implementation = _ghdl_verilog,
-    attrs = {
+    attrs = _COMMON_ATTRS | {
         "arch": attr.string(
             default = "",
             doc = "The architecture to use for the entity, if there are multiple available",
@@ -276,9 +241,5 @@ ghdl_verilog = rule(
         "vendor": attr.string_list(
             doc = "A list of libraries to be treated as vendor library black boxes",
         ),
-        "_script": attr.label(
-            default=Label("@bazel_rules_bid//build:docker_run"),
-            executable=True,
-            cfg="host"),
     },
 )
