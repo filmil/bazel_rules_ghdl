@@ -90,7 +90,7 @@ def _ghdl_library(ctx):
         # TODO(filmil): Figure out how to remove this.
         execution_requirements = {
             "no-sandbox": "1",
-            "no-remote": "1",
+            #"no-remote": "1",
         },
     )
 
@@ -213,7 +213,7 @@ def _ghdl_verilog(ctx):
         # TODO(filmil): Figure out how to remove this.
         execution_requirements = {
             "no-sandbox": "1",
-            "no-remote": "1",
+            #"no-remote": "1",
         },
     )
 
