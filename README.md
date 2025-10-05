@@ -28,6 +28,8 @@ This rule set is hermetic. All dependencies are set up automatically by `bazel`.
 
 In general, see [integration/](integration/) for example use.
 
+The module is available through my bazel registry at https://github.com/filmil/bazel-registry.
+
 ### `ghdl_verilog`
 
 Use GDHL to convert a vhdl file to verilog.  The build process will build an
