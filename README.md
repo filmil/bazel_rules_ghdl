@@ -6,18 +6,12 @@
 [![Tag and Release status](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/tag-and-release.yml/badge.svg)](https://github.com/filmil/bazel_rules_ghdl/actions/workflows/tag-and-release.yml)
 
 This repository contains a [`bazel`][bb] rule set for running [`ghdl`][gg], the
-VHDL simulator and synthesizer, specifically to convert VHDL designs into
-Verilog.
-
-This is useful as Verilog open source tools are way more popular than VHDL
-ones, and often useful modules may be written in both languages. By converting
-to Verilog, you automatically get a chance to use the open source HDL ecosystem
-of tools.
+VHDL simulator and synthesizer
 
 [bb]: https://bazel.build
 [gg]: https://github.com/ghdl/ghdl
 
-### Prerequisites
+## Prerequisites
 
 * `bazel` installation via [`bazelisk`][aa]. I recommend downloading `bazelisk`
   and placing it somewhere in your `$PATH` under the name `bazel`.
@@ -25,6 +19,10 @@ of tools.
 Everything else will be downloaded for use the first time you run the build.
 
 [aa]: https://hdlfactory.com/note/2024/08/24/bazel-installation-via-the-bazelisk-method/
+
+## Hermeticity
+
+This rule set is hermetic. All dependencies are set up automatically by `bazel`.
 
 ## Examples
 
