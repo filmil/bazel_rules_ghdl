@@ -13,7 +13,7 @@ source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
 # --- end runfiles.bash initialization v3 ---
 
 # For some reason rlocation gives up if it doesn't find the repo.
-_rootfs_dir="$(rlocation ${TEST_WORKSPACE:-bazel_rules_ghdl+}/image/rootfs)"
+_rootfs_dir="$(rlocation ${TEST_WORKSPACE:-bazel_rules_ghdl}/image/rootfs)"
 if [[ ${_rootfs_dir} == "" ]]; then
   echo "could not find rootfs: ${_rootfs_dir}"
   exit 1
