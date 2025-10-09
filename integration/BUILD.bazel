@@ -1,4 +1,5 @@
 load("@bazel_rules_ghdl//:rules.bzl", "ghdl_library", "ghdl_verilog")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
 ghdl_library(
     name = "lib",
@@ -16,4 +17,9 @@ genrule(
     srcs = [],
     outs = ["file.txt"],
     cmd = "echo hello > $@"
+)
+
+sh_test(
+    name = "test",
+    srcs = [ "test.sh", ],
 )
