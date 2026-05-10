@@ -3,7 +3,7 @@ version: 1
 # Needs a newer snapshot.
 sources:
   - channel: trixie main
-    url: https://snapshot-cloudflare.debian.org/archive/debian/20251001T023456Z
+    url: https://snapshot.debian.org/archive/debian/20260314T000000Z/
 
 archs:
   - amd64
