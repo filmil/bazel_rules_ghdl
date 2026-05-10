@@ -4,8 +4,8 @@
         "binaries": [
             {
                 "kind": "archive",
-                "url": "https://github.com/filmil/gotopt2/releases/download/v2.1.4/gotopt2-linux-amd64.zip",
-                "sha256": "a8542382a8787e71deb75524577f1b13177ae18939f36881522f4eac2949189a",
+                "url": "https://github.com/filmil/gotopt2/releases/download/v2.3.7/gotopt2-linux-amd64.zip",
+                "sha256": "59968eb70d796ddbd4d079f163f95cb619ae9c96fe411f0a6f8077477afe4b11",
                 "os": "linux",
                 "file": "gotopt2/gotopt2",
                 "cpu": "x86_64"
@@ -16,8 +16,8 @@
         "binaries": [
             {
                 "kind": "archive",
-                "url": "https://github.com/filmil/xrootfs/releases/download/v0.1.0/xrootfs-linux-amd64.zip",
-                "sha256": "",
+                "url": "https://github.com/filmil/xrootfs/releases/download/v0.2.20/xrootfs-linux-amd64.zip",
+                "sha256": "5beb9e10af209205043ca087093b684512339134d200b4880bbd4b4a0ecf7173",
                 "os": "linux",
                 "file": "xrootfs/xrootfs",
                 "cpu": "x86_64"
