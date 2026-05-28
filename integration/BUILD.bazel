@@ -1,4 +1,4 @@
-load("@bazel_rules_ghdl//:rules.bzl", "ghdl_library", "ghdl_verilog")
+load("@rules_ghdl//:rules.bzl", "ghdl_library", "ghdl_verilog")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
 ghdl_library(
