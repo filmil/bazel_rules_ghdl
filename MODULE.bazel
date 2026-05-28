@@ -1,5 +1,5 @@
 module(
-    name = "bazel_rules_ghdl",
+    name = "rules_ghdl",
     version = "0.0.0",
 )
 

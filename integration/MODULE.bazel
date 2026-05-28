@@ -1,5 +1,5 @@
 module(
-    name = "bazel_rules_ghdl_integration",
+    name = "rules_ghdl_integration",
     version = "0.0.0",
 )
 
@@ -7,8 +7,8 @@ bazel_dep(name = "rules_shell", version = "0.8.0")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "gotopt2", version = "2.3.3")
 bazel_dep(name = "bazel_rules_bid", version = "1.4.0")
-bazel_dep(name = "bazel_rules_ghdl", version = "0.0.0")
+bazel_dep(name = "rules_ghdl", version = "0.0.0")
 local_path_override(
-    module_name = "bazel_rules_ghdl",
+    module_name = "rules_ghdl",
     path = "../",
 )
