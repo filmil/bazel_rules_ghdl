@@ -9,7 +9,7 @@
     }
   ],
   "repository": [
-    "github:filmil/bazel_go_basic"
+    "github:filmil/bazel_rules_ghdl"
   ],
   "versions": [
   ],
