@@ -111,21 +111,25 @@ def _ghdl_library(ctx):
 
 ghdl_library = rule(
     implementation = _ghdl_library,
+    doc = "Analyzes VHDL source files to produce a GHDL library object file.",
     attrs = _COMMON_ATTRS | {
         "args": attr.string_list(
             doc = "Additional arguments to pass to GHDL",
         ),
         "srcs": attr.label_list(
             allow_files = [".vhd", ".vhdl"],
+            doc = "The list of VHDL source files.",
         ),
         "deps": attr.label_list(
             providers = [GhdlProvider],
+            doc = "A list of GHDL libraries created using ghdl_library.",
         ),
         "vendor": attr.string_list(
             doc = "A list of libraries to be treated as vendor library black boxes",
         ),
         "standard": attr.string(
             default="08",
+            doc = "The VHDL language standard to use.",
         ),
         "library_name": attr.string(
             doc = """Override the library name from target name if needed.
@@ -231,6 +235,7 @@ def _ghdl_verilog(ctx):
 
 ghdl_verilog = rule(
     implementation = _ghdl_verilog,
+    doc = "Synthesizes a GHDL library into a Verilog netlist.",
     attrs = _COMMON_ATTRS | {
         "args": attr.string_list(
             doc = "Additional arguments to pass to GHDL",
@@ -244,10 +249,11 @@ ghdl_verilog = rule(
         ),
         "lib": attr.label(
             providers = [ GhdlProvider ],
+            doc = "The target GHDL library to synthesize.",
         ),
         "deps": attr.label_list(
             providers = [ GhdlProvider ],
-            doc = "A list of GHDL libraries crated using ghdl_library",
+            doc = "A list of GHDL libraries created using ghdl_library",
         ),
         "standard": attr.string(
             default="08",
@@ -255,7 +261,7 @@ ghdl_verilog = rule(
         ),
         "generics": attr.string_dict(
             allow_empty = True,
-            doc = "A map of string to string, definint the top level unit generic parameters",
+            doc = "A map of string to string, defining the top level unit generic parameters",
         ),
         "vendor": attr.string_list(
             doc = "A list of libraries to be treated as vendor library black boxes",

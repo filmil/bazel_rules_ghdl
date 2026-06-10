@@ -20,6 +20,10 @@ Everything else will be downloaded for use the first time you run the build.
 
 [aa]: https://hdlfactory.com/note/2024/08/24/bazel-installation-via-the-bazelisk-method/
 
+## Documentation
+
+See [rules.md](rules.md) for the generated rule documentation.
+
 ## Hermeticity
 
 This rule set is hermetic. All dependencies are set up automatically by `bazel`.
