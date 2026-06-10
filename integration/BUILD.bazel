@@ -3,13 +3,15 @@ load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
 ghdl_library(
     name = "lib",
-    srcs = [ "hello.vhdl", ]
+    srcs = [ "hello.vhdl", ],
+    args = ["--ieee=synopsys"],
 )
 
 ghdl_verilog(
     name = "verilog",
     lib = ":lib",
     unit = "my_module",
+    args = ["--ieee=synopsys"],
 )
 
 genrule(
