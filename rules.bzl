@@ -61,7 +61,6 @@ def _ghdl_library(ctx):
         for file in ghdl.deps.to_list():
             lib_inputs += [file]
 
-    args = ctx.actions.args()
     ctx.actions.run_shell(
         progress_message = \
             "{cmd} Library {library}".format(
@@ -78,6 +77,7 @@ def _ghdl_library(ctx):
           --std={std} \
           --warn-library \
           {libargs} \
+          {rule_args} \
           {files}
         """.format(
             cmd=_ghdl.path,
@@ -85,6 +85,7 @@ def _ghdl_library(ctx):
             std=std,
             workdir=output_file.dirname,
             libargs=" ".join(libargs),
+            rule_args=" ".join(ctx.attr.args),
             files=" ".join([f.path for f in input_files])
         ),
         # TODO(filmil): Figure out how to remove this.
@@ -111,6 +112,9 @@ def _ghdl_library(ctx):
 ghdl_library = rule(
     implementation = _ghdl_library,
     attrs = _COMMON_ATTRS | {
+        "args": attr.string_list(
+            doc = "Additional arguments to pass to GHDL",
+        ),
         "srcs": attr.label_list(
             allow_files = [".vhd", ".vhdl"],
         ),
@@ -191,6 +195,7 @@ def _ghdl_verilog(ctx):
           {libargs} \
           {generics} \
           {vendor} \
+          {rule_args} \
           --workdir={workdir} \
           --work={library} \
           --out=verilog \
@@ -209,6 +214,7 @@ def _ghdl_verilog(ctx):
             std=ctx.attr.standard,
             generics=" ".join(generics),
             vendor=" ".join(vendor),
+            rule_args=" ".join(ctx.attr.args),
         ),
         # TODO(filmil): Figure out how to remove this.
         execution_requirements = {
@@ -226,6 +232,9 @@ def _ghdl_verilog(ctx):
 ghdl_verilog = rule(
     implementation = _ghdl_verilog,
     attrs = _COMMON_ATTRS | {
+        "args": attr.string_list(
+            doc = "Additional arguments to pass to GHDL",
+        ),
         "arch": attr.string(
             default = "",
             doc = "The architecture to use for the entity, if there are multiple available",
