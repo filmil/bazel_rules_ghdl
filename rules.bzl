@@ -2,10 +2,28 @@ load("@bazel_skylib//lib:paths.bzl", "paths")
 
 _COMMON_ATTRS = {
     "_ghdl": attr.label(
-        default=Label("//bin:ghdl"),
+        default=Label("@ghdl//:ghdl"),
         executable=True,
-        cfg="host"),
+        cfg="exec"),
+    "_vhdl_libs": attr.label_list(
+        default = [
+            Label("@ghdl//:vhdl_libs_v87"),
+            Label("@ghdl//:vhdl_libs_v93"),
+            Label("@ghdl//:vhdl_libs_v08"),
+            Label("@ghdl//:vhdl_libs_v19"),
+        ],
+    ),
 }
+
+def _get_vhdl_libs_and_prefix(ctx, std):
+    active_lib_files = []
+    prefix_dir = ""
+    for f in ctx.files._vhdl_libs:
+        if "vhdl_libs_v{}".format(std) in f.path:
+            active_lib_files.append(f)
+            if f.basename.endswith(".cf"):
+                prefix_dir = f.path.rsplit("/", 3)[0]
+    return active_lib_files, prefix_dir
 
 GhdlProvider = provider(
     doc = "A provider of GHDL library",
@@ -61,14 +79,19 @@ def _ghdl_library(ctx):
         for file in ghdl.deps.to_list():
             lib_inputs += [file]
 
+    active_libs, prefix_dir = _get_vhdl_libs_and_prefix(ctx, std)
+
     ctx.actions.run_shell(
         progress_message = \
             "{cmd} Library {library}".format(
             cmd=_ghdl, library=library_name),
-        inputs = inputs + dep_sources + lib_inputs,
+        inputs = inputs + dep_sources + lib_inputs + active_libs,
         outputs = outputs + aux_dirs,
         tools = [_ghdl],
         mnemonic = "GHDL",
+        env = {
+            "GHDL_PREFIX": prefix_dir,
+        },
         command = """\
           {cmd} \
           -a \
@@ -185,14 +208,19 @@ def _ghdl_verilog(ctx):
 
     arch = ctx.attr.arch or ""
 
+    active_libs, prefix_dir = _get_vhdl_libs_and_prefix(ctx, ctx.attr.standard)
+
     ctx.actions.run_shell(
         progress_message = \
             "{cmd} Library {library}".format(
             cmd=_ghdl, library=name),
-        inputs = inputs + libraries,
+        inputs = inputs + libraries + active_libs,
         outputs = outputs,
         tools = [_ghdl],
         mnemonic = "GHDLSYNTH",
+        env = {
+            "GHDL_PREFIX": prefix_dir,
+        },
         command = """\
           {cmd} \
           synth \
