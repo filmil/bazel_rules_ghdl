@@ -1,0 +1,29 @@
+load("@rules_vhdl//vhdl:defs.bzl", "vhdl_library")
+load("@rules_ghdl//:rules.bzl", "ghdl_analyze", "ghdl_test")
+
+vhdl_library(
+    name = "sim_src",
+    srcs = [
+        "clkgen.vhdl",
+        "resetgen.vhdl",
+    ],
+    library = "sim",
+)
+
+ghdl_analyze(
+    name = "sim",
+    library = ":sim_src",
+)
+
+ghdl_test(
+    name = "sim_test",
+    srcs = [
+        "clkgen_test.vhdl",
+    ],
+    deps = [
+        ":sim",
+    ],
+    entities = [
+        "tb", "config_tb2",
+    ]
+)
