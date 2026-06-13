@@ -1,4 +1,3 @@
-
 load("@bazel_lib//:bzl_library.bzl", "bzl_library")
 load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 load("@gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
@@ -21,7 +20,13 @@ bzl_library(
     srcs = ["rules.bzl"],
     visibility = ["//visibility:public"],
     deps = [
-        "@bazel_skylib//lib:paths",
+        "//internal:providers",
+        "//internal:toolchain",
+        "//internal:ghdl_analyze",
+        "//internal:ghdl_elaborate",
+        "//internal:ghdl_test",
+        "//internal:ghdl_verilog",
+        "//internal:macros",
     ],
 )
 
